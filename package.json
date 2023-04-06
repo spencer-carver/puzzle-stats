@@ -1,0 +1,14 @@
+{
+    "name": "puzzle-stats",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "export": "zip -r puzzle-stats.zip . -x \"./.git/*\""
+    },
+    "author": "Spencer Carver",
+    "license": "ISC",
+    "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.306.0"
+    }
+}
