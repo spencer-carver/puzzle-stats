@@ -32,17 +32,13 @@ async function queryAllStats() {
 async function queryPuzzleStats(puzzleName) {
     const record = await db.queryItem(generateParams(puzzleName));
 
-    if (!record) {
-        return {};
-    }
-
     return {
-        hints: record.stats.M?.hints?.N || 0,
-        intermediates: record.stats.M?.intermediates?.N || 0,
-        incorrect: record.stats.M?.incorrect?.N || 0,
-        correct: record.stats.M?.correct?.N || 0,
-        answers: record.stats.M?.answers?.L.map(({ S }) => S) || [],
-        firstSolveTimestamp: record.stats.M?.firstSolveTimestamp?.N
+        hints: record?.stats?.M?.hints?.N || 0,
+        intermediates: record?.stats?.M?.intermediates?.N || 0,
+        incorrect: record?.stats?.M?.incorrect?.N || 0,
+        correct: record?.stats?.M?.correct?.N || 0,
+        answers: record?.stats?.M?.answers?.L.map(({ S }) => S) || [],
+        firstSolveTimestamp: record?.stats?.M?.firstSolveTimestamp?.N
     };
 }
 
