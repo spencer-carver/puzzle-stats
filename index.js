@@ -8,7 +8,7 @@ exports.handler = async (event) => {
         headers,
         pathParameters,
         requestContext,
-        body
+        body = {}
     } = event;
     
     const origin = headers.origin || headers.Origin;
@@ -47,14 +47,26 @@ exports.handler = async (event) => {
     }
 
     switch(operation) {
-        case "correct":
+        case "correct": {
             await statsDb.addCorrect(puzzleName);
-        case "hint":
+
+            break;
+        }
+        case "hint": {
             await statsDb.addHint(puzzleName);
-        case "intermediate":
+
+            break;
+        }
+        case "intermediate": {
             await statsDb.addIntermediate(puzzleName);
-        case "incorrect":
+
+            break;
+        }
+        case "incorrect": {
             await statsDb.addIncorrect(puzzleName, answer);
+
+            break;
+        }
         default: {
             response.statusCode = 404;
 
