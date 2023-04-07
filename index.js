@@ -8,7 +8,7 @@ exports.handler = async (event) => {
         headers,
         pathParameters,
         requestContext,
-        body = {}
+        body
     } = event;
     
     const origin = headers.origin || headers.Origin;
@@ -21,7 +21,7 @@ exports.handler = async (event) => {
     }
 
     const { puzzleName } = pathParameters;
-    const { operation, answer } = JSON.parse(body);
+    const { operation, answer } = JSON.parse(body) || {};
 
     const response = {
         statusCode: 204,

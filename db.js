@@ -8,7 +8,7 @@ async function getAll(params) {
                 return reject(err);
             }
     
-            return resolve(data.Item);
+            return resolve(data.Items);
         });
     });
 }

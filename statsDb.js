@@ -29,7 +29,10 @@ function formatPuzzleStats(record) {
         intermediates: record?.stats?.M?.intermediates?.N || 0,
         incorrect: record?.stats?.M?.incorrect?.N || 0,
         correct: record?.stats?.M?.correct?.N || 0,
-        answers: record?.stats?.M?.answers?.L.map(({ S }) => S) || [],
+        answers: record?.stats?.M?.answers?.M ? Object.keys(record?.stats?.M?.answers?.M).reduce((answerMap, answer) => ({
+            ...answerMap,
+            [answer]: parseInt(record.stats.M.answers.M[answer].N)
+        }), {}) : {},
         firstSolveTimestamp: record?.stats?.M?.firstSolveTimestamp?.N
     };
 }
@@ -37,7 +40,10 @@ function formatPuzzleStats(record) {
 async function queryAllStats() {
     const records = await db.getAll({ TableName: DATABASE.tableName });
 
-    return records.map(formatPuzzleStats);
+    return records.reduce((statMap, { puzzleName, stats }) => ({
+        ...statMap,
+        [puzzleName.S]: formatPuzzleStats({ stats })
+    }), {});
 }
 
 async function queryPuzzleStats(puzzleName) {
