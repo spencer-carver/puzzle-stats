@@ -4,6 +4,7 @@ const statsDb = require("./statsDb");
 exports.handler = async (event) => {
     console.log(event);
     const {
+        httpMethod,
         headers,
         pathParameters,
         requestContext,
@@ -31,33 +32,35 @@ exports.handler = async (event) => {
         multiValueHeaders: {}
     };
 
+    if (operation === "stats" || httpMethod) {
+        response.statusCode = 200;
+
+        if (puzzleName === "all") {
+            response.body = JSON.stringify(await statsDb.queryAllStats());
+
+            return response;
+        }
+
+        response.body = JSON.stringify(await statsDb.queryPuzzleStats(puzzleName));
+
+        return response;
+    }
+
     switch(operation) {
-        case "correct": {
+        case "correct":
             await statsDb.addCorrect(puzzleName);
-
-            return response;
-        }
-        case "hint": {
+        case "hint":
             await statsDb.addHint(puzzleName);
-
-            return response;
-        }
-        case "intermediate": {
+        case "intermediate":
             await statsDb.addIntermediate(puzzleName);
-
-            return response;
-        }
-        case "incorrect": {
+        case "incorrect":
             await statsDb.addIncorrect(puzzleName, answer);
-
-            return response;
-        }
         default: {
-            // todo
-            response.statusCode = 200;
-            response.body = JSON.stringify(await statsDb.queryPuzzleStats(puzzleName));
+            response.statusCode = 404;
 
-            return response;
+            response.body = JSON.stringify({ error: "unknown operation" });
         }
     }
+
+    return response;
 };

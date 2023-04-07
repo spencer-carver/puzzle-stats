@@ -23,15 +23,7 @@ function generateParams(puzzleName, stats) {
     return params;
 }
 
-async function queryAllStats() {
-    const records = await db.queryAllStats({ TableName: DATABASE.tableName });
-
-    return records;
-}
-
-async function queryPuzzleStats(puzzleName) {
-    const record = await db.queryItem(generateParams(puzzleName));
-
+function formatPuzzleStats(record) {
     return {
         hints: record?.stats?.M?.hints?.N || 0,
         intermediates: record?.stats?.M?.intermediates?.N || 0,
@@ -40,6 +32,18 @@ async function queryPuzzleStats(puzzleName) {
         answers: record?.stats?.M?.answers?.L.map(({ S }) => S) || [],
         firstSolveTimestamp: record?.stats?.M?.firstSolveTimestamp?.N
     };
+}
+
+async function queryAllStats() {
+    const records = await db.getAll({ TableName: DATABASE.tableName });
+
+    return records.map(formatPuzzleStats);
+}
+
+async function queryPuzzleStats(puzzleName) {
+    const record = await db.queryItem(generateParams(puzzleName));
+
+    return formatPuzzleStats(record);
 }
 
 async function addHint(puzzleName) {
