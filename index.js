@@ -21,7 +21,7 @@ exports.handler = async (event) => {
     }
 
     const { puzzleName } = pathParameters;
-    const { operation, answer } = JSON.parse(body) || {};
+    const { operation, answer, uuid } = JSON.parse(body) || {};
 
     const response = {
         statusCode: 204,
@@ -48,7 +48,7 @@ exports.handler = async (event) => {
 
     switch(operation) {
         case "correct": {
-            await statsDb.addCorrect(puzzleName);
+            await statsDb.addCorrect(puzzleName, uuid);
 
             break;
         }

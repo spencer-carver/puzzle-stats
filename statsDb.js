@@ -23,6 +23,11 @@ function generateParams(puzzleName, stats) {
     return params;
 }
 
+// TODO some more fun data here
+function anynomizeUUID(uuid) {
+    return "Anynomous User";
+}
+
 function formatPuzzleStats(record) {
     return {
         hints: record?.stats?.M?.hints?.N || 0,
@@ -33,7 +38,10 @@ function formatPuzzleStats(record) {
             ...answerMap,
             [answer]: parseInt(record.stats.M.answers.M[answer].N)
         }), {}) : {},
-        firstSolveTimestamp: record?.stats?.M?.firstSolveTimestamp?.N
+        firstSolve: record?.stats?.M?.firstSolve?.M ? {
+            timestamp: record.stats.M.firstSolve.M.timestamp.N,
+            user: anynomizeUUID(record.stats.M.firstSolve.M.user.S)
+        } : {},
     };
 }
 
@@ -111,19 +119,25 @@ async function addIncorrect(puzzleName, candidateAnswer) {
     return db.insertItem(generateParams(puzzleName, record.stats));
 }
 
-async function addCorrect(puzzleName) {
+async function addCorrect(puzzleName, uuid) {
     let record = await db.queryItem(generateParams(puzzleName));
 
     if (!record) {
         record = { stats: { M: {
             correct: { N: "1" },
-            firstSolveTimestamp: { N: (new Date()).getTime() }
+            firstSolve: { M : {
+                timestamp: { N: `${ (new Date()).getTime() }` },
+                user: { S: uuid }
+            } }
         } } };
     } else if (!record.stats.M.correct) {
         record = { stats: { M: {
             ...record.stats.M,
             correct: { N: "1" },
-            firstSolveTimestamp: { N: `${ (new Date()).getTime() }` }
+            firstSolve: { M : {
+                timestamp: { N: `${ (new Date()).getTime() }` },
+                user: { S: uuid }
+            } }
         } } };
     } else {
         record = { stats: { M: {
