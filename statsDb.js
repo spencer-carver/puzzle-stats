@@ -1,4 +1,5 @@
 const db = require("./db");
+const { anynomizeUUID } = require("./anynomize-user");
 
 const DATABASE = {
     tableName: "puzzleStats",
@@ -23,23 +24,18 @@ function generateParams(puzzleName, stats) {
     return params;
 }
 
-// TODO some more fun data here
-function anynomizeUUID(uuid) {
-    return "Anynomous User";
-}
-
 function formatPuzzleStats(record) {
     return {
-        hints: record?.stats?.M?.hints?.N || 0,
-        intermediates: record?.stats?.M?.intermediates?.N || 0,
-        incorrect: record?.stats?.M?.incorrect?.N || 0,
-        correct: record?.stats?.M?.correct?.N || 0,
+        hints: record?.stats?.M?.hints?.N ? parseInt(record.stats.M.hints.N) : 0,
+        intermediates: record?.stats?.M?.intermediates?.N  ? parseInt(record.stats.M.intermediates.N) : 0,
+        incorrect: record?.stats?.M?.incorrect?.N  ? parseInt(record.stats.M.incorrect.N) : 0,
+        correct: record?.stats?.M?.correct?.N  ? parseInt(record.stats.M.correct.N) : 0,
         answers: record?.stats?.M?.answers?.M ? Object.keys(record?.stats?.M?.answers?.M).reduce((answerMap, answer) => ({
             ...answerMap,
             [answer]: parseInt(record.stats.M.answers.M[answer].N)
         }), {}) : {},
         firstSolve: record?.stats?.M?.firstSolve?.M ? {
-            timestamp: record.stats.M.firstSolve.M.timestamp.N,
+            timestamp: parseInt(record.stats.M.firstSolve.M.timestamp.N),
             user: anynomizeUUID(record.stats.M.firstSolve.M.user.S)
         } : {},
     };
