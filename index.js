@@ -1,6 +1,23 @@
 const { isAllowed, STAGING_API_DOMAIN } = require("./private-helpers");
 const statsDb = require("./statsDb");
 
+function massagePuzzleName(puzzleName) {
+    // rounds cause issues here, re-map them.
+    if (puzzleName.startsWith("alchemy-")) {
+        return `alchemy:${ puzzleName.split("alchemy-")[1] }`;
+    }
+
+    if (puzzleName.startsWith("enigmarch-2023-")) {
+        return `enigmarch-2023:${ puzzleName.split("enigmarch-2023-")[1] }`;
+    }
+
+    if (puzzleName.startsWith("enigmarch-2024-")) {
+        return `enigmarch-2024:${ puzzleName.split("enigmarch-2024-")[1] }`;
+    }
+
+    return puzzleName;
+}
+
 exports.handler = async (event) => {
     console.log(event);
     const {
@@ -20,7 +37,7 @@ exports.handler = async (event) => {
         };
     }
 
-    const { puzzleName } = pathParameters;
+    const puzzleName = massagePuzzleName(pathParameters.puzzleName);
     const { operation, answer, uuid } = JSON.parse(body) || {};
 
     const response = {
