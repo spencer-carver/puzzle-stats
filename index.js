@@ -1,21 +1,21 @@
 const { isAllowed, STAGING_API_DOMAIN } = require("./private-helpers");
 const statsDb = require("./statsDb");
 
+// rounds cause issues here, re-map them.
+const ROUNDS = [
+    "alchemy",
+    "enigmarch-2023",
+    "enigmarch-2024"
+];
+
 function massagePuzzleName(puzzleName) {
-    // rounds cause issues here, re-map them.
-    if (puzzleName.startsWith("alchemy-")) {
-        return `alchemy:${ puzzleName.split("alchemy-")[1] }`;
+    const identifiedRound = ROUNDS.find((round) => puzzleName.startsWith(`${ round }-`));
+
+    if (!identifiedRound) {
+        return puzzleName;
     }
 
-    if (puzzleName.startsWith("enigmarch-2023-")) {
-        return `enigmarch-2023:${ puzzleName.split("enigmarch-2023-")[1] }`;
-    }
-
-    if (puzzleName.startsWith("enigmarch-2024-")) {
-        return `enigmarch-2024:${ puzzleName.split("enigmarch-2024-")[1] }`;
-    }
-
-    return puzzleName;
+    return `${ identifiedRound }:${ puzzleName.split(`${ identifiedRound }-`)[1] }`;
 }
 
 exports.handler = async (event) => {
