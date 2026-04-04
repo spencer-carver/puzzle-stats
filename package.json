@@ -4,7 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "export": "zip -r puzzle-stats.zip . -x \"./.git/*\""
+        "export": "zip -r puzzle-stats.zip . -x \"./.git/*\"",
+        "deploy": "aws lambda update-function-code --function-name puzzle-stats --zip-file fileb://puzzle-stats.zip"
     },
     "author": "Spencer Carver",
     "license": "ISC",
